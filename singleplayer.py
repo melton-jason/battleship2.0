@@ -66,6 +66,19 @@ def run(difficulty = None):
             ai.placeShips(battleship.SCREEN, battleship.player2ships, battleship.player2placedShips, battleship.player2ShipBoard)
             battleship.player2ready = True
             battleship.copyPlayer2placedShips = battleship.createShallowCopy(battleship.player2placedShips)
+            if (difficulty == 'hard'):
+                enemy_ships = []
+                for ship in battleship.player1placedShips:
+                    for rect in ship:
+                        x = battleship.getRow(battleship.player1ShipBoard, rect)
+                        y = battleship.getCol(battleship.player1ShipBoard, rect)
+                        print(f'x: {x}')
+                        print(f'y: {y}')
+                        enemy_ships.append((x, y))
+                    ai.targets = enemy_ships
+                    print(ai.targets)
+
+            print(battleship.player2placedShips)
         # add text saying battleship and add rows and cols
         add_text.add_text(battleship.SCREEN, 'Battleship')
         add_text.add_labels_targets(battleship.SCREEN)
@@ -110,6 +123,7 @@ def run(difficulty = None):
                             pygame.time.wait(2000)
                             add_text.ask_play_again(battleship.SCREEN)
                     pause(1)
+                    print(battleship.gameover)
                     if not battleship.gameover:
                         add_text.add_black_screen(battleship.SCREEN)
                         pygame.display.update()
@@ -124,10 +138,15 @@ def run(difficulty = None):
                     previous_hits_length = len(battleship.player2hits)
                     row, col = ai.make_move(ship_hit)
                     played = ai.checkForCollision(battleship.player2TargetBoard, battleship.player1ShipBoard, row, col, battleship.player2hits, battleship.player2misses, battleship.player1placedShips, battleship.copyPlayer1placedShips, battleship.player2BlastRadius)
-                    if len(battleship.player2hits) > previous_hits_length:
-                        print("Ship hit on last turn.")
-                        ship_hit = True
-                        ai.update_last_hit(row, col)
+                    while not played:
+                        row, col = ai.make_move(ship_hit)
+                        played = ai.checkForCollision(battleship.player2TargetBoard, battleship.player1ShipBoard, row, col, battleship.player2hits, battleship.player2misses, battleship.player1placedShips, battleship.copyPlayer1placedShips, battleship.player2BlastRadius)
+
+                    if difficulty == 'medium':
+                        if len(battleship.player2hits) > previous_hits_length:
+                            print("Ship hit on last turn.")
+                            ship_hit = True
+                            ai.update_last_hit(row, col)
                     if played:
                         battleship.printBoard(battleship.player2TargetBoard, battleship.player2hits, battleship.player2misses)
                         pygame.display.update()
@@ -174,7 +193,7 @@ def run(difficulty = None):
                     battleship.player2BlastRadius = 0
                     battleship.SCREEN.fill((0,0,0))
                     pygame.display.update()
-                    run()
+                    run(difficulty)
                 elif event.key == pygame.K_n:
                     pygame.quit()
                     sys.exit()
