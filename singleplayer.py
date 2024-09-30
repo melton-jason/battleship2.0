@@ -35,6 +35,7 @@ import get_ships_num
 import battleship
 import easy
 import medium
+import hard
 
 def run():
     print("singleplayer")
@@ -45,7 +46,8 @@ def run():
     battleship.player2placedShips = arrays[3]
     clock = pygame.time.Clock()
     easy_ai = easy.EasyAI()
-    ai = medium.MediumAI()
+    medium_ai = medium.MediumAI()
+    ai = hard.HardAI(battleship.player1placedShips)
     ship_hit = False
 
     while not battleship.gameover:
@@ -114,7 +116,7 @@ def run():
                     pygame.display.update()
                     pygame.time.delay(1000)
                     previous_hits_length = len(battleship.player2hits)
-                    row, col = ai.make_move(ship_hit)
+                    row, col = ai.make_move()
                     played = ai.checkForCollision(battleship.player2TargetBoard, battleship.player1ShipBoard, row, col, battleship.player2hits, battleship.player2misses, battleship.player1placedShips, battleship.copyPlayer1placedShips, battleship.player2BlastRadius)
                     if len(battleship.player2hits) > previous_hits_length:
                         print("Ship hit on last turn.")
